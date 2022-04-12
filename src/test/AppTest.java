@@ -1,5 +1,3 @@
-package test;
-
 import static org.junit.Assert.*;
 
 import org.junit.Test;
@@ -7,7 +5,7 @@ import org.junit.Test;
 public class AppTest {
 
 	@Test
-	public void test() {
+	public void testFail() {
 		fail("Not yet implemented");
 	}
 
