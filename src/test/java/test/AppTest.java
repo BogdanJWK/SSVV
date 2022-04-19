@@ -2,6 +2,7 @@ package test;
 
 import static org.junit.Assert.*;
 
+import domain.Nota;
 import domain.Student;
 import domain.Tema;
 import org.junit.Test;
@@ -14,6 +15,8 @@ import validation.NotaValidator;
 import validation.StudentValidator;
 import validation.TemaValidator;
 import validation.ValidationException;
+
+import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
@@ -355,6 +358,33 @@ public class AppTest {
 
 		tema.setPrimire(12);
 		Assertions.assertDoesNotThrow(() -> service.addTema(tema));
+	}
+
+	@Test
+	public void test_addGradeWithInValidDeliveryDate_throwValidationException(){
+		String filenameStudent = "src/main/resources/Studenti.xml";
+		String filenameTema = "src/main/resources/Teme.xml";
+		String filenameNota = "src/main/resources/Note.xml";
+		StudentValidator studentValidator = new StudentValidator();
+		TemaValidator temaValidator = new TemaValidator();
+		TemaXMLRepo temaXMLRepository = new TemaXMLRepo(filenameTema);
+		StudentXMLRepo studentXMLRepository = new StudentXMLRepo(filenameStudent);
+		NotaValidator notaValidator = new NotaValidator(studentXMLRepository, temaXMLRepository);
+		NotaXMLRepo notaXMLRepository = new NotaXMLRepo(filenameNota);
+		Nota nota = new Nota("1", "1","1",9.82, LocalDate.of(2022, 5, 6));
+		Service service = new Service(studentXMLRepository, studentValidator, temaXMLRepository, temaValidator, notaXMLRepository, notaValidator);
+
+		ValidationException exception =
+				Assertions.assertThrows(ValidationException.class, () -> service.addNota(nota, "we try our best"));
+		Assertions.assertEquals("Studentul nu mai poate preda aceasta tema!", exception.getMessage());
+
+	}
+
+	@Test
+	public void test_addAllDomainInstancesWithValidInputs_addStudentAndAssigment_throwValidationExceptionForAddGrade(){
+		test_addStudentWithValidName_addStudent();
+		test_addAssigmentWithValidID_addAssigment();
+		test_addGradeWithInValidDeliveryDate_throwValidationException();
 	}
 
 }
